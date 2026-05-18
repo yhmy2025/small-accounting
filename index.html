@@ -3,101 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>📒 简易做账</title>
+<title>简易记账</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f0f2f5;color:#333;padding-bottom:80px}
-.hdr{background:linear-gradient(135deg,#667eea,#764ba2);padding:50px 16px 16px;color:#fff}
-.hdr h1{font-size:20px}
-.hdr .bw{display:flex;gap:8px;margin-top:10px;padding:8px;background:rgba(255,255,255,.15);border-radius:10px}
-.hdr .bw .bi{flex:1;text-align:center}
-.hdr .bw .bi .l{font-size:10px;opacity:.8}
-.hdr .bw .bi .v{font-size:16px;font-weight:700}
-.nt{display:flex;gap:3px;background:#e0e0e0;border-radius:8px;padding:3px;margin:10px;overflow-x:auto;position:sticky;top:8px;z-index:99}
-.nt .tb{flex-shrink:0;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;color:#666;white-space:nowrap}
-.nt .tb.on{background:#fff;color:#667eea;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.1)}
-.ct{max-width:500px;margin:0 auto;padding:0 10px}
-.pg{display:none}.pg.on{display:block}
-.cd{background:#fff;border-radius:10px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.cti{font-size:13px;font-weight:600;margin-bottom:8px;color:#555}
-.sr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.sc{background:#fff;border-radius:10px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.sc .a{font-size:11px;color:#999}.sc .b{font-size:20px;font-weight:700;margin-top:3px}.sc .c{font-size:10px;margin-top:2px}
-.btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 16px;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer}
-.btn:active{opacity:.7}
-.btn-p{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}.btn-b{display:flex;width:100%}
-.btn-s{padding:5px 10px;font-size:11px;border-radius:6px}
-.btn-o{background:#fff;border:1px solid #ddd;color:#666}
-.btn-r{background:#ef4444;color:#fff}.btn-g{background:#22c55e;color:#fff}
-.rec{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0}
-.rec:last-child{border-bottom:none}
-.rec .ic{width:30px;height:30px;background:#f0f0f0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;margin-right:8px}
-.rec .if{flex:1}.rec .if .c{font-size:13px;font-weight:500}.rec .if .d{font-size:10px;color:#999}
-.rec .am{font-size:14px;font-weight:600}
-.tt{display:flex;gap:3px;background:#eee;border-radius:8px;padding:3px;margin-bottom:12px}
-.tt .o{flex:1;text-align:center;padding:6px;border-radius:6px;font-size:13px;cursor:pointer}
-.tt .o.on.i{background:#22c55e;color:#fff}.tt .o.on.e{background:#ef4444;color:#fff}
-.ai{text-align:center;padding:10px 0}
-.ai input{font-size:28px;font-weight:700;text-align:center;border:none;outline:none;width:100%;padding:8px 0}
-.qa{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
-.cg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.cg .ci{text-align:center;padding:8px 4px;border-radius:8px;border:1px solid #e5e5e5;cursor:pointer;font-size:11px}
-.cg .ci .e{font-size:18px;display:block;margin-bottom:3px}
-.cg .ci.sl{border-color:#667eea;background:#f0f0ff}
-.fg{margin-bottom:10px}
-.fg label{display:block;font-size:12px;font-weight:500;color:#555;margin-bottom:4px}
-.fg input,.fg select,.fg textarea{width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:13px;outline:none;background:#fff}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+body{background:#f5f5f5;padding-bottom:76px;max-width:500px;margin:0 auto}
+.pg{display:none;padding:12px}
+.pg.on{display:block}
+.nt{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;display:flex;z-index:100;max-width:500px;margin:0 auto}
+.nt .tb{flex:1;text-align:center;padding:8px 2px;font-size:10px;color:#999;cursor:pointer}
+.nt .tb.on{color:#4f46e5}
+.nt .tb .ic{font-size:20px;margin-bottom:1px}
+.btn{display:inline-block;border:none;border-radius:8px;cursor:pointer;text-align:center}
+.btn-b{width:100%}
+.btn-s{padding:6px 12px;font-size:12px}
+.btn-p{background:#4f46e5;color:#fff}
+.btn-g{background:#22c55e;color:#fff}
+.btn-o{background:#f0f0f0;color:#333}
+.btn-r{background:#fef2f2;color:#ef4444}
+.cd{background:#fff;border-radius:12px;padding:12px;margin-bottom:10px}
+.cti{font-size:13px;font-weight:600;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #f0f0f0}
+.emp{text-align:center;padding:24px;color:#999}
+.emp .ic{font-size:32px;margin-bottom:6px}
+.sr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.sc{padding:8px;border-radius:8px;background:#fafafa}
+.sc .a{font-size:11px;color:#999;margin-bottom:2px}
+.sc .b{font-size:18px;font-weight:700}
+.sc .c{font-size:10px;color:#999}
+.rec{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid #f5f5f5}
+.rec .ic{font-size:18px;margin-right:8px}
+.rec .if{flex:1}
+.rec .c{font-size:13px;font-weight:500}
+.rec .d{font-size:11px;color:#999;margin-top:2px}
+.rec .am{font-size:15px;font-weight:700;min-width:80px;text-align:right}
+.tt{display:flex;background:#f0f0f0;border-radius:8px;overflow:hidden}
+.tt .o{flex:1;text-align:center;padding:8px;font-size:13px;cursor:pointer}
+.tt .o.on{background:#4f46e5;color:#fff;border-radius:8px}
+.ai input{width:100%;padding:12px;border:none;font-size:24px;text-align:center;font-weight:700;outline:none}
+.qa{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;justify-content:center}
+.cg{display:flex;flex-wrap:wrap;gap:6px}
+.ci{width:calc(50% - 3px);padding:8px;border-radius:8px;background:#fafafa;text-align:center;font-size:12px;cursor:pointer;border:2px solid transparent}
+.ci.sl{border-color:#4f46e5;background:#eef2ff}
+.ci .e{display:block;font-size:18px;margin-bottom:2px}
+.fg{margin-bottom:8px}
+.fg label{display:block;font-size:12px;color:#666;margin-bottom:4px;font-weight:500}
+.fg input,.fg textarea,.fg select{width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:13px;outline:none}
+.fg textarea{resize:vertical;min-height:40px}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;padding:6px;border-bottom:2px solid #eee;color:#666;font-weight:600;font-size:11px}
-td{padding:6px;border-bottom:1px solid #f0f0f0}
-.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:500}
-.tag.i{background:#f0fdf4;color:#16a34a}.tag.e{background:#fef2f2;color:#dc2626}
-.scs{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:22px;font-weight:700;color:#fff}
-.scs.g{background:linear-gradient(135deg,#22c55e,#16a34a)}
-.scs.w{background:linear-gradient(135deg,#f59e0b,#d97706)}
-.scs.d{background:linear-gradient(135deg,#ef4444,#dc2626)}
-.al{padding:8px 10px;border-radius:6px;margin-bottom:6px;font-size:12px}
+th{background:#fafafa;padding:8px 4px;text-align:left;font-weight:600;color:#666;font-size:11px;border-bottom:2px solid #eee}
+td{padding:8px 4px;border-bottom:1px solid #f0f0f0}
+.tag{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600}
+.tag.i{background:#dcfce7;color:#16a34a}
+.tag.e{background:#fef2f2;color:#dc2626}
+.dz{border:2px dashed #ddd;border-radius:12px;padding:24px;text-align:center;cursor:pointer}
+.dz.dragover{border-color:#4f46e5;background:#eef2ff}
+.scs{display:inline-flex;width:64px;height:64px;border-radius:50%;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;margin:0 auto}
+.scs.g{background:#22c55e}
+.scs.w{background:#f59e0b}
+.scs.d{background:#ef4444}
+.al{padding:8px;border-radius:8px;margin-bottom:6px;font-size:12px}
 .al.g{background:#f0fdf4;border-left:3px solid #22c55e}
-.al.w{background:#fefce8;border-left:3px solid #f59e0b}
+.al.w{background:#fffbeb;border-left:3px solid #f59e0b}
 .al.d{background:#fef2f2;border-left:3px solid #ef4444}
-.al .t{font-weight:500}.al .det{color:#666;margin-top:2px;font-size:11px}
-.dz{border:2px dashed #ddd;border-radius:10px;padding:20px;text-align:center;cursor:pointer}
-.si{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0}
-.si:last-child{border-bottom:none}.si .lb{font-size:13px}
-.emp{text-align:center;padding:30px;color:#999}.emp .ic{font-size:36px;margin-bottom:6px}
-.ts{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
-.ts.sh{opacity:1}
+.al .t{font-weight:600;margin-bottom:2px}
+.al .det{color:#666;font-size:11px}
+#ts{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+#ts.sh{opacity:1}
 </style>
 </head>
 <body>
-<div class=ts id=ts></div>
-<div class=hdr>
-  <div style=display:flex;align-items:center;justify-content:space-between>
-    <h1>📒 简易做账</h1>
-    <span style=font-size:12px;opacity:.8 id=cp></span>
-  </div>
-  <div class=bw>
-    <div class=bi><div class=l>收入</div><div class=v style=color:#4ade80 id=mi></div></div>
-    <div class=bi><div class=l>支出</div><div class=v style=color:#f87171 id=me></div></div>
-    <div class=bi><div class=l>利润</div><div class=v id=mp></div></div>
-  </div>
-</div>
-<div class=nt>
-  <div class="tb on" onclick=gt("home",this)>🏠首页</div>
-  <div class=tb onclick=gt("add",this)>✏️记账</div>
-  <div class=tb onclick=gt("list",this)>📋流水</div>
-  <div class=tb onclick=gt("rpt",this)>📊报告</div>
-  <div class=tb onclick=gt("imp",this)>📥导入</div>
-  <div class=tb onclick=gt("set",this)>⚙️设置</div>
-</div>
-<div class=ct>
+<div id=ts></div>
 <div id=p-home class="pg on"></div>
 <div id=p-add class=pg></div>
 <div id=p-list class=pg></div>
 <div id=p-rpt class=pg></div>
 <div id=p-imp class=pg></div>
 <div id=p-set class=pg></div>
+<div class=nt>
+<div class="tb on" onclick="gt('home',this)"><div class=ic>🏠</div>首页</div>
+<div class=tb onclick="gt('add',this)"><div class=ic>✏️</div>记账</div>
+<div class=tb onclick="gt('list',this)"><div class=ic>📋</div>流水</div>
+<div class=tb onclick="gt('rpt',this)"><div class=ic>📊</div>报告</div>
+<div class=tb onclick="gt('imp',this)"><div class=ic>📥</div>导入</div>
+<div class=tb onclick="gt('set',this)"><div class=ic>⚙️</div>设置</div>
 </div>
-<script src="app.js?v=4"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>
