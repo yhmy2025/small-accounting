@@ -137,3 +137,6 @@ function lset(){ld();$('set-name').value=d.s.name||'';$('set-ind').value=d.s.ind
 function svset(){ld();d.s.name=$('set-name').value;d.s.industry=$('set-ind').value;sv();ts('✅ 已保存')}
 function expAll(){ld();var b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='记账备份_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u);ts('✅ 已导出')}
 function clr(){if(!confirm('清除所有数据？不可恢复！'))return;localStorage.removeItem(SK);d={r:[],s:{}};ts('已清除');gt('home')}
+
+// Auto-init
+rh();
