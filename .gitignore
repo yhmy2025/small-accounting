@@ -1,0 +1,10 @@
+# 构建中间产物
+addon_*.js
+app_*.js
+!app.js
+build_*.js
+fix_*.js
+final_push.js
+normalize_lf.js
+push_straight.js
+test_builder.js
