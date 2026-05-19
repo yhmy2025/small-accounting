@@ -148,3 +148,5 @@ function rl(){ld();var n=new Date();var ym=n.getFullYear()+"-"+String(n.getMonth
 
 // Auto-init
 rh();
+
+function li(){var c=$("p-imp");if(!c)return;c.innerHTML="<div style=\"padding:16px\"><h3>📥 导入数据</h3><div style=\"border:2px dashed #ccc;border-radius:12px;padding:40px;text-align:center;margin:16px 0;cursor:pointer\" onclick=\"document.getElementById('fimp').click()\" ondragover=\"event.preventDefault();this.style.borderColor='#4A90D9'\" ondrop=\"event.preventDefault();var f=event.dataTransfer.files[0];if(f)handleImportFile(f)\"><div style=\"font-size:48px;margin-bottom:8px\">📂</div><div style=\"color:#666;font-size:15px\">点击选择文件或拖拽文件到此处</div><div style=\"color:#999;font-size:12px;margin-top:4px\">支持 .json(备份) / .csv(流水) 格式</div></div><input type=\"file\" id=\"fimp\" accept=\".json,.csv\" style=\"display:none\" onchange=\"if(this.files[0])handleImportFile(this.files[0])\"><div id=\"importStatus\" style=\"margin:12px 0;color:#666;font-size:14px\"></div></div>";}
