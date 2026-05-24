@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>分期真实利率计算器 - 看看银行到底收了你多少利息</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#f5f5f5;color:#333;max-width:500px;margin:0 auto;min-height:100vh}
+.header{background:linear-gradient(135deg,#d35400,#e67e22);color:#fff;padding:24px 20px;text-align:center}
+.header h1{font-size:20px;margin-bottom:4px}
+.header p{font-size:12px;opacity:0.85}
+.card{background:#fff;margin:12px 16px;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.card h3{font-size:14px;color:#666;margin-bottom:12px}
+.row{display:flex;gap:10px;margin-bottom:10px}
+.row>div{flex:1}
+label{font-size:12px;color:#999;display:block;margin-bottom:4px}
+input,select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:15px;outline:none;transition:border 0.15s}
+input:focus,select:focus{border-color:#e67e22}
+input[readonly]{background:#f9f9f9;color:#333;font-weight:600}
+.preset{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.preset span{background:#f0f0f0;padding:6px 12px;border-radius:16px;font-size:12px;cursor:pointer;transition:all 0.15s}
+.preset span.on{background:#e67e22;color:#fff}
+.result{display:none}
+.result.show{display:block}
+.result .fake{background:#fff3cd;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#856404}
+.result .real{background:#ffe0e0;border-radius:8px;padding:10px 14px;font-size:12px;color:#c0392b}
+.result .real strong{font-size:16px}
+.comparison{margin-top:10px;display:flex;gap:10px}
+.comp-box{flex:1;text-align:center;padding:12px 8px;border-radius:10px}
+.comp-box.lie{background:#f0f0f0}
+.comp-box.truth{background:#ffe0e0}
+.comp-box .lb{font-size:11px;color:#999;margin-bottom:4px}
+.comp-box .val{font-size:22px;font-weight:700}
+.comp-box.lie .val{color:#999}
+.comp-box.truth .val{color:#e74c3c}
+.comp-box .sub{font-size:10px;color:#999;margin-top:2px}
+.detail{margin-top:10px}
+.detail table{width:100%;font-size:11px;border-collapse:collapse}
+.detail td{padding:6px 4px;border-bottom:1px solid #eee}
+.detail .h td{color:#999;font-size:10px;border-bottom:2px solid #ddd}
+.warn{background:#ffe0e0;margin:12px 16px;border-radius:10px;padding:12px 16px;font-size:12px;color:#c0392b;display:none}
+.warn.show{display:block}
+.bottom-banner{position:fixed;bottom:0;left:0;right:0;max-width:500px;margin:0 auto;background:linear-gradient(135deg,#2c3e50,#34495e);color:#fff;padding:10px 16px;font-size:12px;text-align:center;z-index:100}
+.bottom-banner a{color:#f39c12;text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>💳 分期真实利率计算器</h1>
+  <p>银行说月费率0.6%，实际年化到底是多少？</p>
+</div>
+
+<div class="card">
+  <h3>📝 输入分期信息</h3>
+  <div class="preset" id="presets">
+    <span onclick="setPreset(10000,12,0.6)" class="on">花呗1万分12期</span>
+    <span onclick="setPreset(50000,24,0.5)">信用卡5万分24期</span>
+    <span onclick="setPreset(100000,36,0.45)">车贷10万分36期</span>
+    <span onclick="setPreset(3000,6,0.75)">小额3千分6期</span>
+  </div>
+  <div class="row">
+    <div><label>分期金额（元）</label><input type="number" id="amount" value="10000" oninput="calc()"></div>
+    <div><label>分期期数</label><select id="periods" onchange="calc()">
+      <option value="3">3期</option><option value="6">6期</option><option value="9">9期</option>
+      <option value="12" selected>12期</option><option value="18">18期</option>
+      <option value="24">24期</option><option value="36">36期</option>
+    </select></div>
+  </div>
+  <div class="row">
+    <div><label>每期手续费率（%）</label><input type="number" id="feeRate" value="0.6" step="0.01" oninput="calc()" placeholder="如 0.6"></div>
+    <div><label>或：每期还多少</label><input type="number" id="monthly" placeholder="自动计算" oninput="calcFromMonthly()"></div>
+  </div>
+</div>
+
+<div class="card result show" id="resultCard">
+  <h3>📊 计算结果</h3>
+  <div class="comparison">
+    <div class="comp-box lie">
+      <div class="lb">银行告诉你的</div>
+      <div class="val" id="fakeRate">7.2%</div>
+      <div class="sub">名义年利率</div>
+    </div>
+    <div class="comp-box truth">
+      <div class="lb">⚠️ 实际年化利率</div>
+      <div class="val" id="realRate">13.03%</div>
+      <div class="sub">IRR真实利率</div>
+    </div>
+  </div>
+  <div class="detail">
+    <table>
+      <tr class="h"><td></td><td>每期本金</td><td>每期手续费</td><td>合计月供</td></tr>
+      <tr><td>每期</td><td id="perPrincipal">¥833</td><td id="perFee">¥60</td><td id="perTotal">¥893</td></tr>
+      <tr><td>总计</td><td id="totalPrincipal">¥10,000</td><td id="totalFee">¥720</td><td id="totalPay">¥10,720</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="warn" id="warn">
+  💡 <strong>这个利率意味着什么？</strong> 同样是借钱，目前主流消费贷实际年化约4-8%，而这个分期产品的真实成本是 <strong id="warnRate">13%</strong>——比银行消费贷贵了将近一倍。
+</div>
+
+<div class="bottom-banner">
+  💡 更多工具? <a href="https://yhmy2025.github.io/small-accounting/sub-bill/">订阅账单汇总</a> · <a href="https://yhmy2025.github.io/small-accounting/">记账小助手</a>
+</div>
+
+<script>
+function setPreset(amount, periods, feeRate){
+  document.querySelectorAll('#presets span').forEach(function(s){s.classList.remove('on');});
+  event.target.classList.add('on');
+  document.getElementById('amount').value = amount;
+  document.getElementById('periods').value = periods;
+  document.getElementById('feeRate').value = feeRate;
+  document.getElementById('monthly').value = '';
+  calc();
+}
+
+function calc(){
+  document.getElementById('monthly').value = '';
+  var amount = parseFloat(document.getElementById('amount').value) || 0;
+  var periods = parseInt(document.getElementById('periods').value) || 12;
+  var feeRate = parseFloat(document.getElementById('feeRate').value) || 0;
+  
+  if(amount <= 0 || feeRate <= 0){ resetResult(); return; }
+  
+  var perPrincipal = amount / periods;
+  var perFee = amount * (feeRate / 100);
+  var monthly = perPrincipal + perFee;
+  var totalFee = perFee * periods;
+  var nominalRate = (feeRate * 12).toFixed(2);
+  
+  // IRR calculation using Newton's method
+  var guess = feeRate / 100 * 2; // initial guess
+  for(var iter = 0; iter < 100; iter++){
+    var f = -amount;
+    var df = 0;
+    for(var i = 1; i <= periods; i++){
+      f += monthly / Math.pow(1 + guess, i);
+      df += -i * monthly / Math.pow(1 + guess, i + 1);
+    }
+    var newGuess = guess - f / df;
+    if(Math.abs(newGuess - guess) < 1e-8) break;
+    guess = newGuess;
+  }
+  var realMonthly = guess;
+  var realAnnual = (Math.pow(1 + realMonthly, 12) - 1) * 100;
+  
+  document.getElementById('perPrincipal').textContent = '¥' + perPrincipal.toFixed(0);
+  document.getElementById('perFee').textContent = '¥' + perFee.toFixed(2);
+  document.getElementById('perTotal').textContent = '¥' + monthly.toFixed(2);
+  document.getElementById('totalPrincipal').textContent = '¥' + amount.toFixed(0);
+  document.getElementById('totalFee').textContent = '¥' + totalFee.toFixed(2);
+  document.getElementById('totalPay').textContent = '¥' + (amount + totalFee).toFixed(2);
+  document.getElementById('fakeRate').textContent = nominalRate + '%';
+  document.getElementById('realRate').textContent = realAnnual.toFixed(2) + '%';
+  
+  var warn = document.getElementById('warn');
+  if(realAnnual > 10){
+    warn.classList.add('show');
+    document.getElementById('warnRate').textContent = realAnnual.toFixed(1) + '%';
+  } else {
+    warn.classList.remove('show');
+  }
+}
+
+function calcFromMonthly(){
+  var amount = parseFloat(document.getElementById('amount').value) || 0;
+  var periods = parseInt(document.getElementById('periods').value) || 12;
+  var monthly = parseFloat(document.getElementById('monthly').value) || 0;
+  
+  if(amount <= 0 || monthly <= 0){ return; }
+  
+  var perPrincipal = amount / periods;
+  var perFee = monthly - perPrincipal;
+  if(perFee < 0){ perFee = 0; }
+  var feeRate = (perFee / amount * 100).toFixed(4);
+  document.getElementById('feeRate').value = feeRate;
+  calc();
+}
+
+function resetResult(){
+  document.getElementById('perPrincipal').textContent = '¥0';
+  document.getElementById('perFee').textContent = '¥0';
+  document.getElementById('perTotal').textContent = '¥0';
+  document.getElementById('totalPrincipal').textContent = '¥0';
+  document.getElementById('totalFee').textContent = '¥0';
+  document.getElementById('totalPay').textContent = '¥0';
+  document.getElementById('fakeRate').textContent = '0%';
+  document.getElementById('realRate').textContent = '0%';
+  document.getElementById('warn').classList.remove('show');
+}
+
+calc();
+</script>
+</body>
+</html>
